@@ -18,32 +18,7 @@
 #include <QDataStream>
 #include <QDebug>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 8, 0)
-#include <QtPlatformSupport/private/qevdevkeyboardhandler_p.h>
-#else
-#include <QtInputSupport/private/qevdevkeyboardhandler_p.h>
-#endif
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-namespace QEvdevKeyboardMap = QKeyboardMap;
-#endif
-
-//HACK : to use evdev default keymap which is private static variable
-//Change to the class name for local usage QEvdevKeyboardHandler -> WebOSKeymapHandler
-//Or we can just copy the default keymap here
-class WebOSKeymapHandler
-{
-public:
-    static const QEvdevKeyboardMap::Mapping s_keymap_default[];
-    static const QEvdevKeyboardMap::Composing s_keycompose_default[];
-};
-#define QEvdevKeyboardHandler WebOSKeymapHandler
-#if QT_VERSION < QT_VERSION_CHECK(5, 8, 0)
-#include <QtPlatformSupport/private/qevdevkeyboard_defaultmap_p.h>
-#else
-#include <QtInputSupport/private/qevdevkeyboard_defaultmap_p.h>
-#endif
-
+#include "qevdevkeyboard_defaultmap_p.h"
 #include "webos_keymap_p.h"
 
 int main(int argc, char **argv)

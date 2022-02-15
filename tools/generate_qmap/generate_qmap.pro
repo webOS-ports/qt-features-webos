@@ -20,12 +20,6 @@ TARGET = generate_qmap
 CONFIG += console warn_off
 QT = core
 
-equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 8) {
-    QT += platformsupport-private
-} else {
-    QT += input_support-private
-}
-
 SOURCES += generate_qmap.cpp
 
 target.path = $$[QT_HOST_BINS]
