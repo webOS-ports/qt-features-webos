@@ -17,10 +17,6 @@
 #ifndef WEBOS_KEYMAP_P_H
 #define WEBOS_KEYMAP_P_H
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-namespace QEvdevKeyboardMap = QKeyboardMap;
-#endif
-
 // Keymap for WebOS specific
 // { keycode, unicode, qtcode, modifiers, flags, special }
 const QEvdevKeyboardMap::Mapping webos_keymap[] = {
