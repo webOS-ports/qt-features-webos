@@ -21,7 +21,16 @@
 // { keycode, unicode, qtcode, modifiers, flags, special }
 const QEvdevKeyboardMap::Mapping webos_keymap[] = {
     { 122, 0xffff, Qt::Key_Hangul,  0x00, 0x00, 0x0000 }, // Hangul
-    { 125, 0xffff, Qt::Key_Super_L, 0x00, 0x00, 0x0000 }  // LEFT_META (Windows key)
+    { 125, 0xffff, Qt::Key_Super_L, 0x00, 0x00, 0x0000 }, // LEFT_META (Windows key)
+
+    // The hardware toolbelt of a phone with physical call keys. Qt's default
+    // table has none of these, so without them the keys never become Qt key
+    // events at all. What each one is used for is decided per device, above
+    // this layer: these are the keycodes' own meanings, not one phone's labels.
+    { 158, 0xffff, Qt::Key_Back,     0x00, 0x00, 0x0000 }, // KEY_BACK
+    { 172, 0xffff, Qt::Key_HomePage, 0x00, 0x00, 0x0000 }, // KEY_HOMEPAGE
+    { 231, 0xffff, Qt::Key_Call,     0x00, 0x00, 0x0000 }, // KEY_SEND
+    { 580, 0xffff, Qt::Key_Menu,     0x00, 0x00, 0x0000 }  // KEY_APPSELECT
 };
 
 #endif // WEBOS_KEYMAP_P_H
