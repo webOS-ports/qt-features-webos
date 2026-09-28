@@ -30,7 +30,13 @@ const QEvdevKeyboardMap::Mapping webos_keymap[] = {
     { 158, 0xffff, Qt::Key_Back,     0x00, 0x00, 0x0000 }, // KEY_BACK
     { 172, 0xffff, Qt::Key_HomePage, 0x00, 0x00, 0x0000 }, // KEY_HOMEPAGE
     { 231, 0xffff, Qt::Key_Call,     0x00, 0x00, 0x0000 }, // KEY_SEND
-    { 580, 0xffff, Qt::Key_Menu,     0x00, 0x00, 0x0000 }  // KEY_APPSELECT
+    { 580, 0xffff, Qt::Key_Menu,     0x00, 0x00, 0x0000 }, // KEY_APPSELECT
+
+    // Sym tapped on its own, on a keyboard whose Sym selects the layer
+    // printed on the key faces rather than acting as a modifier; see the
+    // bbqX0kbd patches. Key_Launch0 carries no meaning of its own, which
+    // leaves what the key does to the layer that knows the keyboard.
+    { 585, 0xffff, Qt::Key_Launch0,  0x00, 0x00, 0x0000 }  // KEY_EMOJI_PICKER
 };
 
 #endif // WEBOS_KEYMAP_P_H
