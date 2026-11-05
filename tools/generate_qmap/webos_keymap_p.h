@@ -36,7 +36,17 @@ const QEvdevKeyboardMap::Mapping webos_keymap[] = {
     // printed on the key faces rather than acting as a modifier; see the
     // bbqX0kbd patches. Key_Launch0 carries no meaning of its own, which
     // leaves what the key does to the layer that knows the keyboard.
-    { 585, 0xffff, Qt::Key_Launch0,  0x00, 0x00, 0x0000 }  // KEY_EMOJI_PICKER
+    { 585, 0xffff, Qt::Key_Launch0,  0x00, 0x00, 0x0000 }, // KEY_EMOJI_PICKER
+
+    // Camera and programmable keys. As above, each keycode gets its own Qt
+    // key and what the key does is the shell's per-device decision: on one
+    // phone KEY_CAMERA is a shutter key, on another a privacy switch.
+    // Key_Launch0 is taken by the emoji picker, so the programmable keys
+    // start at Key_Launch1.
+    { 112, 0xffff, Qt::Key_Launch2,     0x00, 0x00, 0x0000 }, // KEY_MACRO
+    { 148, 0xffff, Qt::Key_Launch1,     0x00, 0x00, 0x0000 }, // KEY_PROG1
+    { 212, 0xffff, Qt::Key_Camera,      0x00, 0x00, 0x0000 }, // KEY_CAMERA
+    { 528, 0xffff, Qt::Key_CameraFocus, 0x00, 0x00, 0x0000 }  // KEY_CAMERA_FOCUS
 };
 
 #endif // WEBOS_KEYMAP_P_H
