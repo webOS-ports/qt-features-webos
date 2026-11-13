@@ -46,7 +46,13 @@ const QEvdevKeyboardMap::Mapping webos_keymap[] = {
     { 112, 0xffff, Qt::Key_Launch2,     0x00, 0x00, 0x0000 }, // KEY_MACRO
     { 148, 0xffff, Qt::Key_Launch1,     0x00, 0x00, 0x0000 }, // KEY_PROG1
     { 212, 0xffff, Qt::Key_Camera,      0x00, 0x00, 0x0000 }, // KEY_CAMERA
-    { 528, 0xffff, Qt::Key_CameraFocus, 0x00, 0x00, 0x0000 }  // KEY_CAMERA_FOCUS
+    { 528, 0xffff, Qt::Key_CameraFocus, 0x00, 0x00, 0x0000 }, // KEY_CAMERA_FOCUS
+
+    // MediaTek's keypad driver reports the programmable key of a phone such
+    // as the Unihertz Titan as 250, a code with no name in Linux, from the
+    // vendor's device tree. It is the same key KEY_PROG1 is on other phones,
+    // so it gets the same Qt key.
+    { 250, 0xffff, Qt::Key_Launch1,     0x00, 0x00, 0x0000 }  // MediaTek programmable key
 };
 
 #endif // WEBOS_KEYMAP_P_H

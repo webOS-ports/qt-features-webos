@@ -1,0 +1,15 @@
+# Static-analysis findings that were looked at and are not fixed, with why.
+# static-analysis.sh fails on anything not listed here; line numbers are
+# ignored when matching, so an entry survives code moving around it.
+# Format: <tool>: <file>:<line>: <message>   # <reason>
+flawfinder: tests/unit/qmapfile.cpp:142:  [1] (access) umask:   # the forked child sets the umask the test asks for, before execv; nothing is checked first
+flawfinder: tests/unit/qmapfile.cpp:151:  [4] (shell) execv:   # argv[0] is GENERATE_QMAP, the tool's path fixed at build time; no shell, arguments from the test itself
+flawfinder: tests/unit/qmapfile.cpp:158:  [1] (buffer) read:   # read() into a fixed 512-byte buffer with sizeof buf; only the n bytes read are appended
+flawfinder: tests/unit/qmapfile.cpp:179:  [2] (misc) open:   # QFile::open in a test, on a file in its own QTemporaryDir or in the source tree; flawfinder matches the method name
+flawfinder: tests/unit/test_evdev_handler.cpp:190:  [2] (misc) open:   # QFile::open in a test, on a file in its own QTemporaryDir or in the source tree; flawfinder matches the method name
+flawfinder: tests/unit/test_generate_qmap.cpp:154:  [2] (misc) open:   # QFile::open in a test, on a file in its own QTemporaryDir or in the source tree; flawfinder matches the method name
+flawfinder: tests/unit/test_generate_qmap.cpp:75:  [2] (misc) open:   # QFile::open in a test, on a file in its own QTemporaryDir or in the source tree; flawfinder matches the method name
+flawfinder: tests/unit/test_key_extension.cpp:31:  [2] (misc) open:   # QFile::open in a test, on a file in its own QTemporaryDir or in the source tree; flawfinder matches the method name
+flawfinder: tests/unit/test_key_extension.cpp:45:  [2] (misc) open:   # QFile::open in a test, on a file in its own QTemporaryDir or in the source tree; flawfinder matches the method name
+flawfinder: tests/unit/test_keymap_tables.cpp:31:  [2] (misc) open:   # QFile::open in a test, on a file in its own QTemporaryDir or in the source tree; flawfinder matches the method name
+flawfinder: tools/generate_qmap/generate_qmap.cpp:54:  [2] (misc) open:   # QSaveFile::open on the path the build gives; QSaveFile makes its temporary file exclusively and renames it over the target, so there is no check-then-use window

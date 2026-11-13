@@ -14,24 +14,49 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-#include <QFile>
 #include <QDataStream>
-#include <QDebug>
+#include <QSaveFile>
+#include <QString>
+
+#include <cstddef>
+#include <cstdio>
 
 #include "qevdevkeyboard_defaultmap_p.h"
 #include "webos_keymap_p.h"
 
+template <typename T, std::size_t N>
+static constexpr quint32 entries(const T (&)[N])
+{
+    return quint32(N);
+}
+
 int main(int argc, char **argv)
 {
-    if (argc != 2)
-        qFatal("Wrong number of argument %d", argc);
+    if (argc != 2) {
+        std::fprintf(stderr, "usage: %s <output.qmap>\n",
+                     argc > 0 && argv[0] ? argv[0] : "generate_qmap");
+        return 1;
+    }
 
-    char *filename = argv[1];
-    QFile f(filename);
+    const char *filename = argv[1];
+
+    // QSaveFile, not QFile: QFile buffers what it is given and writes it out
+    // only when it is closed, which its destructor does without telling
+    // anyone whether that worked. A full disk then left an empty or partial
+    // keymap behind and still exited 0; Qt's evdev handler refuses such a
+    // file at boot and falls back to its built-in table, so every key added
+    // below went missing with no error at build time. QSaveFile writes to a
+    // temporary file and only renames it over the target once everything has
+    // been written and flushed, so the target is either the whole keymap or
+    // untouched, and a failure is reported here.
+    QSaveFile f(QString::fromLocal8Bit(filename));
 
     if (!f.open(QIODevice::WriteOnly)) {
-        qFatal("Could not open keymap file '%s'", qPrintable(filename));
+        std::fprintf(stderr, "Could not open keymap file '%s': %s\n",
+                     filename, qPrintable(f.errorString()));
+        return 1;
     }
+
     // .qmap files have a very simple structure:
     // quint32 magic           (QKeyboard::FileMagic)
     // quint32 version         (1)
@@ -40,19 +65,19 @@ int main(int argc, char **argv)
     // all QKeyboard::Mappings via QDataStream::operator(<<|>>)
     // all QKeyboard::Composings via QDataStream::operator(<<|>>)
 
-    quint32 qmap_version = 1;
-    quint32 default_keymap_size = sizeof(WebOSKeymapHandler::s_keymap_default)/sizeof(QEvdevKeyboardMap::Mapping);
-    quint32 default_keycompose_size = sizeof(WebOSKeymapHandler::s_keycompose_default)/sizeof(QEvdevKeyboardMap::Composing);
-    quint32 webos_keymap_size = sizeof(webos_keymap)/sizeof(QEvdevKeyboardMap::Mapping);
-    quint32 qmap_keymap_size = default_keymap_size + webos_keymap_size;
+    const quint32 qmap_version = 1;
+    const quint32 default_keymap_size = entries(WebOSKeymapHandler::s_keymap_default);
+    const quint32 default_keycompose_size = entries(WebOSKeymapHandler::s_keycompose_default);
+    const quint32 webos_keymap_size = entries(webos_keymap);
+    const quint32 qmap_keymap_size = default_keymap_size + webos_keymap_size;
 
     QDataStream ds(&f);
-    if (ds.status() != QDataStream::Ok || qmap_keymap_size == 0) {
-        qFatal("'%s' is not a valid .qmap keymap file", qPrintable(filename));
-    }
 
     ds << QEvdevKeyboardMap::FileMagic << qmap_version << qmap_keymap_size << default_keycompose_size;
 
+    // The default table goes first: Qt's handler takes the first entry it
+    // finds for a keycode and modifier state, so an entry in webos_keymap[]
+    // can add a keycode but not override one the default table already maps.
     for (quint32 i = 0; i < default_keymap_size; ++i)
         ds << WebOSKeymapHandler::s_keymap_default[i];
     for (quint32 i = 0; i < webos_keymap_size; ++i)
@@ -60,8 +85,11 @@ int main(int argc, char **argv)
     for (quint32 i = 0; i < default_keycompose_size; ++i)
         ds << WebOSKeymapHandler::s_keycompose_default[i];
 
-    if (ds.status() != QDataStream::Ok) {
-        qFatal("Keymap file '%s' can not be written.", qPrintable(filename));
+    // Without commit() the destructor discards the temporary file.
+    if (ds.status() != QDataStream::Ok || !f.commit()) {
+        std::fprintf(stderr, "Keymap file '%s' can not be written: %s\n",
+                     filename, qPrintable(f.errorString()));
+        return 1;
     }
 
     return 0;
