@@ -17,7 +17,7 @@
 CONFIG += no_module_headers internal_module
 
 TARGET = generate_qmap
-CONFIG += console warn_off
+CONFIG += console warn_on
 QT = core
 
 SOURCES += generate_qmap.cpp
