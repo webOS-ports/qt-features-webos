@@ -16,7 +16,7 @@
 
 # webosSet(<variable>, [<default1>], [<default2>], [<default3>], .. [<default5>])
 # - set <variable> if not defined
-# - use first non-empty value within <default1>, <default2> and <default3>
+# - use first non-empty value of <default1> .. <default5>
 defineTest(webosSet) {
     variable = $$1
     !defined($$variable, var) {
@@ -27,7 +27,7 @@ defineTest(webosSet) {
         isEmpty(value): value = $$3
         isEmpty(value): value = $$4
         isEmpty(value): value = $$5
-        isEmpty(value): value = $$5
+        isEmpty(value): value = $$6
         !isEmpty(value) {
              $$variable = $$value
              export($$variable)
