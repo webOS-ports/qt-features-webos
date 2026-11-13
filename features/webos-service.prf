@@ -142,8 +142,19 @@ group.path = $$WEBOS_INSTALL_SYSBUS_GROUPDIR
         }
     }
 
+    # The same for the files installed as they are. "*.<type>*.json" let a
+    # name with the type word in it match twice: the .api.json of a
+    # com.webos.service.permissionmanager also went into client-permissions.d.
     for (type, SYSBUS_FILE_TYPE) {
-        found_files = $$files("$$WEBOS_SYSBUS_DIR/*.$$type*.json")
+        unset(SYSBUS_GLOB)
+        equals(type, perm):  SYSBUS_GLOB = *.perm.json
+        equals(type, api):   SYSBUS_GLOB = *.api.json
+        equals(type, group): SYSBUS_GLOB = *.groups.json *.group.json
+        isEmpty(SYSBUS_GLOB): \
+            error("webos-service: no filename pattern defined for LS2 file type '$$type'")
+
+        found_files =
+        for (glob, SYSBUS_GLOB): found_files += $$files("$$WEBOS_SYSBUS_DIR/$$glob")
         !isEmpty(found_files) {
             message("Found SYSBUS_FILE_TYPE: $$found_files")
             for (found_file, found_files) {
